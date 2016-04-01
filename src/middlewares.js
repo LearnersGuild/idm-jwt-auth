@@ -1,22 +1,76 @@
 import jwt from 'jsonwebtoken'
 
-import {userFromJWT, jwtClaimsForUser, cookieOptsJWT} from './utils'
+import {userFromJWT, jwtClaimsForUser, cookieOptsJWT, idmGraphQLFetch} from './utils'
+
+function getToken(req) {
+  const authHeaderRegex = /^Bearer\s([A-Za-z0-9+\/_\-\.]+)$/
+  const authHeader = req.get('Authorization')
+  if (authHeader) {
+    console.info('Found JWT in Authorization header.')
+    return authHeader.match(authHeaderRegex)[1]
+  } else if (req.cookies && req.cookies.lgJWT) {
+    console.info('Found JWT in cookie.')
+    return req.cookies.lgJWT
+  }
+  return null
+}
 
 export function addUserToRequestFromJWT(req, res, next) {
   if (!req.user || !req.lgJWT) {
     try {
-      const authHeaderRegex = /^Bearer\s([A-Za-z0-9+\/_\-\.]+)$/
-      const authHeader = req.get('Authorization')
-      if (authHeader) {
-        console.info('Found JWT in Authorization header.')
-        req.user = userFromJWT(authHeader.match(authHeaderRegex)[1])
-      } else if (req.cookies && req.cookies.lgJWT) {
-        console.info('Found JWT in cookie.')
-        req.user = userFromJWT(req.cookies.lgJWT)
+      const lgJWT = getToken(req)
+      if (lgJWT) {
+        req.user = userFromJWT(lgJWT)
       }
     } catch (err) {
       console.info('Error getting user from JWT:', err.message ? err.message : err)
     }
+  }
+  if (next) {
+    next()
+  }
+}
+
+export async function refreshUserFromIDMService(req, res, next) {
+  try {
+    // if this middleware is being invoked from within this module, skip it
+    // (see `idmGraphQLFetch` in `utils.js`)
+    const skip = req.get('LearnersGuild-Skip-Update-User-Middleware')
+    if (req.user && !skip) {
+      const query = {
+        query: `
+  query ($id: ID!) {
+    getUserById(id: $id) {
+      id
+      email
+      handle
+      name
+      emails
+      phone
+      dateOfBirth
+      timezone
+      roles
+      authProviders {
+        githubOAuth2 {
+          accessToken
+        }
+      }
+    }
+  }
+        `,
+        variables: {
+          id: req.user.id,
+        },
+      }
+
+      console.log('Updating user from IDM service')
+      const lgJWT = getToken(req)
+      const result = await idmGraphQLFetch(query, lgJWT)
+      req.user = result.data.getUserById
+    }
+  } catch (err) {
+    console.error('ERROR updating user from IDM service:', err.stack)
+    return res.status(500).send(err)
   }
   if (next) {
     next()
