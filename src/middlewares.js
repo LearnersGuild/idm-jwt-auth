@@ -69,7 +69,7 @@ export async function refreshUserFromIDMService(req, res, next) {
       const user = result.data.getUserById
       if (user.dateOfBirth) {
         const dateOfBirth = new Date(user.dateOfBirth)
-        if (dateOfBirth.getDate().isNaN()) {
+        if (!isNaN(dateOfBirth.getTime())) {
           user.dateOfBirth = dateOfBirth
         }
       }
