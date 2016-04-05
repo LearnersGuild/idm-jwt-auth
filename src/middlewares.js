@@ -66,7 +66,14 @@ export async function refreshUserFromIDMService(req, res, next) {
       console.log('Updating user from IDM service')
       const lgJWT = getToken(req)
       const result = await idmGraphQLFetch(query, lgJWT)
-      req.user = result.data.getUserById
+      const user = result.data.getUserById
+      if (user.dateOfBirth) {
+        const dateOfBirth = new Date(user.dateOfBirth)
+        if (dateOfBirth.getDate().isNaN()) {
+          user.dateOfBirth = dateOfBirth
+        }
+      }
+      req.user = user
     }
   } catch (err) {
     console.error('ERROR updating user from IDM service:', err.stack)

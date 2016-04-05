@@ -43,7 +43,7 @@ export function idmGraphQLFetch(graphQLParams, token = null) {
 export function jwtClaimsForUser(user) {
   /* eslint-disable camelcase */
   const now = Math.floor(Date.now() / 1000)
-  const birthdate = (typeof user.dateOfBirth === 'object') ? user.dateOfBirth.toISOString().slice(0, 10) : user.dateOfBirth
+  const birthdate = (user.dateOfBirth && user.dateOfBirth instanceof Date) ? user.dateOfBirth.toISOString().slice(0, 10) : user.dateOfBirth
   return {
     iss: JWT_ISSUER,
     iat: now,

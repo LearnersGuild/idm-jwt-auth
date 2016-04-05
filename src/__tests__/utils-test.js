@@ -44,6 +44,21 @@ test('jwtClaimsForUser presents correct data', t => {
   t.is(claims.roles, testUser.roles.join(','))
 })
 
+test('jwtClaimsForUser with non-Date dateOfBirth presents correct data', t => {
+  t.plan(9)
+  const specialTestUser = Object.assign({}, testUser, {dateOfBirth: '1973-10-23T00:00:00.000Z'})
+  const claims = jwtClaimsForUser(specialTestUser)
+  t.is(claims.sub, specialTestUser.id)
+  t.is(claims.name, specialTestUser.name)
+  t.is(claims.preferred_username, specialTestUser.handle)
+  t.is(claims.email, specialTestUser.email)
+  t.is(claims.emails, specialTestUser.emails.join(','))
+  t.is(claims.birthdate, specialTestUser.dateOfBirth)
+  t.is(claims.zoneinfo, specialTestUser.timezone)
+  t.is(claims.phone_number, specialTestUser.phone)
+  t.is(claims.roles, specialTestUser.roles.join(','))
+})
+
 test('userFromJWTClaims presents correct data', t => {
   t.plan(9)
   const user = userFromJWTClaims(testClaims)
