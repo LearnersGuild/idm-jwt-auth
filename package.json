@@ -1,6 +1,6 @@
 {
   "name": "@learnersguild/idm-jwt-auth",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Authenticate using JSON web tokens and Learners Guild IDM service.",
   "scripts": {
     "build": "babel -d lib/ src/ --ignore src/__tests__",

@@ -79,8 +79,8 @@ export function userFromJWT(lgJWT) {
   return userFromJWTClaims(jwtClaims)
 }
 
-export function cookieOptsJWT(req) {
+export function cookieOptsJWT(/* req */) {
   const secure = (process.env.NODE_ENV === 'production')
-  const domain = (process.env.NODE_ENV === 'production') ? '.learnersguild.org' : req.hostname
+  const domain = (process.env.NODE_ENV === 'production') ? '.learnersguild.org' : '.learnersguild.dev'
   return {secure, domain, httpOnly: true}
 }
