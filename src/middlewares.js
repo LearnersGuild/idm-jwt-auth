@@ -6,10 +6,10 @@ function getToken(req) {
   const authHeaderRegex = /^Bearer\s([A-Za-z0-9+\/_\-\.]+)$/
   const authHeader = req.get('Authorization')
   if (authHeader) {
-    console.info('Found JWT in Authorization header.')
+    // console.info('Found JWT in Authorization header.')
     return authHeader.match(authHeaderRegex)[1]
   } else if (req.cookies && req.cookies.lgJWT) {
-    console.info('Found JWT in cookie.')
+    // console.info('Found JWT in cookie.')
     return req.cookies.lgJWT
   }
   return null
@@ -23,7 +23,7 @@ export function addUserToRequestFromJWT(req, res, next) {
         req.user = userFromJWT(lgJWT)
       }
     } catch (err) {
-      console.info('Error getting user from JWT:', err.message ? err.message : err)
+      console.error('Error getting user from JWT:', err.message ? err.message : err)
     }
   }
   if (next) {
@@ -63,7 +63,7 @@ export async function refreshUserFromIDMService(req, res, next) {
         },
       }
 
-      console.log('Updating user from IDM service')
+      // console.log('Updating user from IDM service')
       const lgJWT = getToken(req)
       const result = await idmGraphQLFetch(query, lgJWT)
       const user = result.data.getUserById
@@ -91,11 +91,11 @@ export function extendJWTExpiration(req, res, next) {
       const expires = new Date(jwtClaims.exp * 1000)
       const token = jwt.sign(jwtClaims, process.env.JWT_PRIVATE_KEY, {algorithm: 'RS512'})
       req.lgJWT = token
-      console.info('Extending JWT expiration.')
+      // console.info('Extending JWT expiration.')
       res.set('LearnersGuild-JWT', token)
       res.cookie('lgJWT', token, Object.assign(cookieOptsJWT(req), {expires}))
     } catch (err) {
-      console.info('Invalid JWT:', err.message ? err.message : err)
+      console.error('Invalid JWT:', err.message ? err.message : err)
       res.clearCookie('lgJWT', cookieOptsJWT(req))
       req.lgJWT = null
     }
