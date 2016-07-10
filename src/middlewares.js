@@ -63,7 +63,6 @@ export async function refreshUserFromIDMService(req, res, next) {
         },
       }
 
-      // console.log('Updating user from IDM service')
       const lgJWT = getToken(req)
       const result = await idmGraphQLFetch(query, lgJWT)
       const user = result.data.getUserById
@@ -76,8 +75,9 @@ export async function refreshUserFromIDMService(req, res, next) {
       req.user = user
     }
   } catch (err) {
-    console.error('ERROR updating user from IDM service:', err.stack)
-    return res.status(500).send(err)
+    const msg = 'ERROR updating user from IDM service:'
+    console.error(msg, err.stack)
+    return next(new Error(`${msg} ${err.message || err}`))
   }
   if (next) {
     next()
