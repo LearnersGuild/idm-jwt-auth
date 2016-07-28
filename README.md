@@ -1,5 +1,9 @@
 # idm-jwt-auth
 
+[![Code Climate GPA](https://codeclimate.com/repos/579a595fecc56b007d001cac/badges/21d27f854475ab0b51d0/gpa.svg)](https://codeclimate.com/repos/579a595fecc56b007d001cac/feed)
+[![Code Climate Issue Count](https://codeclimate.com/repos/579a595fecc56b007d001cac/badges/21d27f854475ab0b51d0/issue_count.svg)](https://codeclimate.com/repos/579a595fecc56b007d001cac/feed)
+[![Test Coverage](https://codeclimate.com/repos/579a595fecc56b007d001cac/badges/21d27f854475ab0b51d0/coverage.svg)](https://codeclimate.com/repos/579a595fecc56b007d001cac/coverage)
+
 Utilities for implementing JWT authentication against the Learners Guild IDM server on Node.js.
 
 
