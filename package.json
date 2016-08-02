@@ -35,7 +35,6 @@
     "ava": "^0.13.0",
     "babel-cli": "^6.5.1",
     "babel-plugin-add-module-exports": "^0.1.2",
-    "babel-plugin-istanbul": "^1.0.3",
     "babel-preset-es2015": "^6.5.0",
     "babel-preset-stage-2": "^6.5.0",
     "codeclimate-test-reporter": "^0.3.3",
@@ -80,7 +79,10 @@
     ]
   },
   "nyc": {
-    "sourceMap": false,
-    "instrument": false
+    "all": true,
+    "require": [
+      "babel-core/register",
+      "babel-polyfill"
+    ]
   }
 }
