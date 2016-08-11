@@ -42,6 +42,7 @@ export async function refreshUserFromIDMService(req, res, next) {
   query ($id: ID!) {
     getUserById(id: $id) {
       id
+      active
       email
       handle
       name
@@ -72,7 +73,7 @@ export async function refreshUserFromIDMService(req, res, next) {
           user.dateOfBirth = dateOfBirth
         }
       }
-      req.user = user
+      req.user = user.active ? user : null
     }
   } catch (err) {
     const msg = 'ERROR updating user from IDM service:'
@@ -86,21 +87,30 @@ export async function refreshUserFromIDMService(req, res, next) {
 
 export function extendJWTExpiration(req, res, next) {
   if (process.env.JWT_PRIVATE_KEY && req.user) {
-    try {
-      const jwtClaims = jwtClaimsForUser(req.user)
-      const expires = new Date(jwtClaims.exp * 1000)
-      const token = jwt.sign(jwtClaims, process.env.JWT_PRIVATE_KEY, {algorithm: 'RS512'})
-      req.lgJWT = token
-      // console.info('Extending JWT expiration.')
-      res.set('LearnersGuild-JWT', token)
-      res.cookie('lgJWT', token, Object.assign(cookieOptsJWT(req), {expires}))
-    } catch (err) {
-      console.error('Invalid JWT:', err.message ? err.message : err)
-      res.clearCookie('lgJWT', cookieOptsJWT(req))
-      req.lgJWT = null
+    if (req.user.active) {
+      try {
+        const jwtClaims = jwtClaimsForUser(req.user)
+        const expires = new Date(jwtClaims.exp * 1000)
+        const token = jwt.sign(jwtClaims, process.env.JWT_PRIVATE_KEY, {algorithm: 'RS512'})
+        req.lgJWT = token
+        // console.info('Extending JWT expiration.')
+        res.set('LearnersGuild-JWT', token)
+        res.cookie('lgJWT', token, Object.assign(cookieOptsJWT(req), {expires}))
+      } catch (err) {
+        console.error('Invalid JWT:', err.message ? err.message : err)
+        revokeJWT(req, res)
+      }
+    } else {
+      console.log(`Inactive User [${req.user.id}] (${req.user.handle}). Revoking JWT`)
+      revokeJWT(req, res)
     }
   }
   if (next) {
     next()
   }
+}
+
+function revokeJWT(req, res) {
+  res.clearCookie('lgJWT', cookieOptsJWT(req))
+  req.lgJWT = null
 }
