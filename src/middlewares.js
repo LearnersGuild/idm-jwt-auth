@@ -73,7 +73,7 @@ export async function refreshUserFromIDMService(req, res, next) {
           user.dateOfBirth = dateOfBirth
         }
       }
-      req.user = user
+      req.user = user.active ? user : null
     }
   } catch (err) {
     const msg = 'ERROR updating user from IDM service:'
