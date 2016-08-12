@@ -57,6 +57,7 @@ export function jwtClaimsForUser(user) {
     zoneinfo: user.timezone,
     phone_number: user.phone,
     roles: user.roles.join(','),
+    active: user.active,
   }
 }
 
@@ -71,6 +72,7 @@ export function userFromJWTClaims(jwtClaims) {
     timezone: jwtClaims.zoneinfo,
     phone: jwtClaims.phone_number,
     roles: jwtClaims.roles.split(','),
+    active: jwtClaims.active,
   }
 }
 
