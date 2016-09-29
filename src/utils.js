@@ -83,6 +83,6 @@ export function userFromJWT(lgJWT) {
 
 export function cookieOptsJWT(/* req */) {
   const secure = (process.env.NODE_ENV === 'production')
-  const domain = process.env.IDM_BASE_URL.match(/[^.]+\.(org|com|dev)$/)[0]
+  const domain = process.env.IDM_BASE_URL.match(/\.[^.]+\.(org|com|dev)$/)[0]
   return {secure, domain, httpOnly: true}
 }
