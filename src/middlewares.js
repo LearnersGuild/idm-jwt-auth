@@ -51,6 +51,8 @@ export async function refreshUserFromIDMService(req, res, next) {
       dateOfBirth
       timezone
       roles
+      profileUrl
+      avatarUrl
       authProviders {
         githubOAuth2 {
           accessToken
