@@ -46,7 +46,6 @@ Read the [instructions for contributing](./CONTRIBUTING.md).
             // user from IDM, but our JWT is still valid, it's okay, so we won't
             // allow this error to propagate beyond this point
             console.warn('WARNING: unable to refresh user from IDM service:', err)
-            sentry.captureException(err)
           }
           next()
         })
