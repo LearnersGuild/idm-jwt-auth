@@ -23,7 +23,7 @@ export function addUserToRequestFromJWT(req, res, next) {
         req.user = userFromJWT(lgJWT)
       }
     } catch (err) {
-      console.error('Error getting user from JWT:', err.message ? err.message : err)
+      console.error('Error getting user from JWT:', err.stack ? err.stack : err)
     }
   }
   if (next) {
@@ -80,7 +80,7 @@ export async function refreshUserFromIDMService(req, res, next) {
   } catch (err) {
     const msg = 'ERROR updating user from IDM service:'
     console.error(msg, err.stack)
-    return next(new Error(`${msg} ${err.message || err}`))
+    return next(new Error(`${msg} ${err.stack || err}`))
   }
   if (next) {
     next()
@@ -99,7 +99,7 @@ export function extendJWTExpiration(req, res, next) {
         res.set('LearnersGuild-JWT', token)
         res.cookie('lgJWT', token, Object.assign(cookieOptsJWT(req), {expires}))
       } catch (err) {
-        console.error('Invalid JWT:', err.message ? err.message : err)
+        console.error('Invalid JWT:', err.stack ? err.stack : err)
         revokeJWT(req, res)
       }
     } else {
