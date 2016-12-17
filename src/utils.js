@@ -32,7 +32,7 @@ export function idmGraphQLFetch(graphQLParams, token = null) {
     .then(graphQLResponse => {
       if (graphQLResponse.errors && graphQLResponse.errors.length) {
         const allErrors = graphQLResponse.errors.map(err => {
-          return err.message
+          return err.stack
         }).join('\n')
         throw new Error(allErrors)
       }
