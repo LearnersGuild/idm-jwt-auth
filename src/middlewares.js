@@ -24,6 +24,9 @@ export function addUserToRequestFromJWT(req, res, next) {
       }
     } catch (err) {
       console.error('Error getting user from JWT:', err.message ? err.message : err)
+      if (next) {
+        return next(err)
+      }
     }
   }
   if (next) {
@@ -78,9 +81,10 @@ export async function refreshUserFromIDMService(req, res, next) {
       req.user = user.active ? user : null
     }
   } catch (err) {
-    const msg = 'ERROR updating user from IDM service:'
-    console.error(msg, err.stack)
-    return next(new Error(`${msg} ${err.message || err}`))
+    console.error('ERROR updating user from IDM service:', err.message ? err.message : err)
+    if (next) {
+      return next(err)
+    }
   }
   if (next) {
     next()
@@ -101,6 +105,9 @@ export function extendJWTExpiration(req, res, next) {
       } catch (err) {
         console.error('Invalid JWT:', err.message ? err.message : err)
         revokeJWT(req, res)
+        if (next) {
+          return next(err)
+        }
       }
     } else {
       console.log(`Inactive User [${req.user.id}] (${req.user.handle}). Revoking JWT`)
