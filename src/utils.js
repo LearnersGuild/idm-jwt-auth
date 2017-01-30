@@ -24,7 +24,6 @@ export function idmGraphQLFetch(graphQLParams, token = null) {
   return fetch(`${process.env.IDM_BASE_URL}/graphql`, options)
     .then(resp => {
       if (!resp.ok) {
-        console.error('GraphQL ERROR:', resp.statusText)
         throw new Error(`GraphQL ERROR: ${resp.statusText}`)
       }
       return resp.json()
