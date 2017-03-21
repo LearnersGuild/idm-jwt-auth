@@ -15,45 +15,61 @@ Read the [instructions for contributing](./CONTRIBUTING.md).
 
 2. Run the setup tasks:
 
-        $ npm install
-        $ npm run test
+```sh
+npm install
+npm run test
+```
 
 
 ## How to Use
 
-1. Install the module in your project
+__Step 1__ Install the module in your project
 
-      $ npm install --save @learnersguild/idm-jwt-auth
+```sh
+npm install --save @learnersguild/idm-jwt-auth
+```
 
-2. Install the middlewares that you want:
+__Step 2__ Ensure you have a cookie parser
 
-      ```javascript
-      import {
-        addUserToRequestFromJWT,
-        refreshUserFromIDMService,
-        extendJWTExpiration
-      } from '@learnersguild/idm-jwt-auth/lib/middlewares'
+```js
+const cookieParser = require('cookie-parser')
+app.use(cookieParser())
+```
 
-      # ...
-      # ... set up your Express app ...
-      # ...
+__Step 3__ Add the `addUserToRequestFromJWT` middleware to decode the user into `request.user`
 
-      app.use(addUserToRequestFromJWT)
-      app.use((req, res, next) => {
-        refreshUserFromIDMService(req, res, err => {
-          if (err) {
-            // this is not enough to break things -- if we are unable to refresh the
-            // user from IDM, but our JWT is still valid, it's okay, so we won't
-            // allow this error to propagate beyond this point
-            console.warn('WARNING: unable to refresh user from IDM service:', err)
-          }
-          next()
-        })
-      })
-      app.use(extendJWTExpiration)
-      ```
+```js
+const { addUserToRequestFromJWT } = require('@learnersguild/idm-jwt-auth/lib/middlewares')
+app.use(addUserToRequestFromJWT)
+// user should now be available at request.user
+```
 
-## Middlewares
+__Step 4__ If you need to refresh a user's session
+
+```js
+const { refreshUserFromIDMService } = require('@learnersguild/idm-jwt-auth/lib/middlewares')
+app.use((req, res, next) => {
+  refreshUserFromIDMService(req, res, err => {
+    if (err) {
+      // this is not enough to break things -- if we are unable to refresh the
+      // user from IDM, but our JWT is still valid, it's okay, so we won't
+      // allow this error to propagate beyond this point
+      console.warn('WARNING: unable to refresh user from IDM service:', err)
+    }
+    next()
+  })
+})
+```
+
+__Step 5__ If you need to extend a user's session
+
+```js
+const { extendJWTExpiration } = require('@learnersguild/idm-jwt-auth/lib/middlewares')
+app.user(extendJWTExpiration)
+```
+
+
+## Middlewares explained
 
 ### `addUserToRequestFromJWT`
 
