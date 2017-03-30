@@ -85,6 +85,11 @@ If the request has a `user` attribute on it, create a new JWT from that user wit
 There are also utility functions for working with the JWT within `lib/utils`. See the source for more information.
 
 
+## Examples
+
+Checkout [this example app](./example-app.js)
+that uses IDM for auth and can query both `idm` and `game`.
+
 ## License
 
 See the [LICENSE](./LICENSE) file.
